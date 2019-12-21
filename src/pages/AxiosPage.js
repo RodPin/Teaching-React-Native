@@ -78,18 +78,24 @@
 
 // export default App;
 
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {StyleSheet, Button, View, Text, TouchableOpacity} from 'react-native';
 import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
+import {useDispatch, useSelector} from 'react-redux';
+import {setUser} from '../redux/reducers';
 
 const api = axios.create({
   baseURL: 'https://api.github.com/users/',
 });
 
 const App = ({}) => {
+  const dispatch = useDispatch();
+  const userData = useSelector(state => state.user);
   const [lista, setLista] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => pingar(), []);
 
   async function pingar() {
     setLoading(true);
@@ -98,6 +104,7 @@ const App = ({}) => {
         data: {},
       });
       setLista(response.data);
+      dispatch(setUser(response.data));
       // alert(JSON.stringify(response));
     } catch (e) {
       console.log(e);
@@ -108,8 +115,9 @@ const App = ({}) => {
   return (
     <>
       <Spinner visible={loading} />
-      <Button title="Pingar" onPress={() => pingar()}></Button>
+      {/* <Button title="Pingar" onPress={() => pingar()}></Button> */}
       <Text>{lista.login}</Text>
+      <Text>{userData.login}</Text>
     </>
   );
 };
